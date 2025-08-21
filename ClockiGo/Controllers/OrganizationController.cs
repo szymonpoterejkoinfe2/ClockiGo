@@ -1,5 +1,7 @@
 ﻿using ClockiGo.Application.CQRS.Commands.Organization.AddOrganizationCommand;
 using ClockiGo.Application.CQRS.Commands.Organization.AddUserCommand;
+using ClockiGo.Application.CQRS.Commands.Organization.DeleteOrganizationCommand;
+using ClockiGo.Application.CQRS.Queries.Organization.GetOrganizationQuery;
 using ClockiGo.Application.CQRS.Queries.Organization.GetOrganizationsQuery;
 using ClockiGo.Application.Services.Organization.Common;
 using ClockiGo.Contracts.Organization;
@@ -24,12 +26,25 @@ namespace ClockiGo.Presentation.Controllers
 
         [HttpGet]
         public async Task<IActionResult> GetOrganizations()
-        { 
+        {
             var query = new GetOrganizationsQuery();
             ErrorOr<GetOrganizationsResult> result = await _mediator.Send(query);
 
             return result.Match(
                result => Ok(_mapper.Map<GetOrganizationsResponse>(result)),
+               errors => Problem(errors)
+               );
+        }
+
+        [HttpGet("{organizationId}")]
+        public async Task<IActionResult> GetOrganizationById(Guid organizationId)
+        {
+            var query = new GetOrganizationQuery(OrganizationId: organizationId);
+            ErrorOr<GetOrganizationResult> result = await _mediator.Send(query);
+
+
+            return result.Match(
+               result => Ok(_mapper.Map<GetOrganizationResponse>(result)),
                errors => Problem(errors)
                );
         }
@@ -59,8 +74,21 @@ namespace ClockiGo.Presentation.Controllers
                 result => Ok(_mapper.Map<AddUserResponse>(result)),
                 errors => Problem(errors)
             );
-     
+        }
 
+
+        [HttpDelete("{organizationId}")]
+        public async Task<IActionResult> DeleteOrganization(Guid organizationId)
+        {
+            var command = new DeleteOrganizationCommand(organizationId);
+
+            ErrorOr<DeleteOrganizationResult> result = await _mediator.Send(command);
+
+
+            return result.Match(
+                result => Ok(_mapper.Map<DeleteUserResponse>(result)),
+                errors => Problem(errors)
+            );
         }
 
     }

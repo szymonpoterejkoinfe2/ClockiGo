@@ -4,5 +4,6 @@ using MediatR;
 
 namespace ClockiGo.Application.CQRS.Queries.Organization.GetOrganizationsQuery
 {
-    public record GetOrganizationsQuery() : IRequest<ErrorOr<GetOrganizationsResult>>;
+    public record GetOrganizationsQuery
+        () : IRequest<ErrorOr<GetOrganizationsResult>>;
 }

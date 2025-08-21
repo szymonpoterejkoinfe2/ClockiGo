@@ -72,17 +72,18 @@ namespace ClockiGo.Infrastructure.Presistance.Repositories
         }
 
         public async Task<bool> DeleteAsync(Guid organizationId)
-        { 
-            var organization = await GetOrganizationByIdAsync(organizationId);     
-            if(organization is null) return false;
+        {
+            var organizationEntity = await _clockiGoContext.Organizations.FirstOrDefaultAsync(o => o.Id == organizationId);
 
-            var organizationEntity = _mapper.Map<OrganizationEntity>(organization);
+            if (organizationEntity is null)
+                return false;
 
             _clockiGoContext.Organizations.Remove(organizationEntity);
             await Save();
 
             return true;
         }
+
 
         private async Task Save()
         {
