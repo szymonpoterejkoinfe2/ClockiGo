@@ -1,6 +1,7 @@
 ﻿using ClockiGo.Application.CQRS.Commands.Organization.AddOrganizationCommand;
 using ClockiGo.Application.CQRS.Commands.Organization.AddUserCommand;
 using ClockiGo.Application.CQRS.Commands.Organization.DeleteOrganizationCommand;
+using ClockiGo.Application.CQRS.Commands.Organization.UpdateOrganizationCommand;
 using ClockiGo.Application.CQRS.Queries.Organization.GetOrganizationQuery;
 using ClockiGo.Application.CQRS.Queries.Organization.GetOrganizationsQuery;
 using ClockiGo.Application.Services.Organization.Common;
@@ -87,6 +88,21 @@ namespace ClockiGo.Presentation.Controllers
 
             return result.Match(
                 result => Ok(_mapper.Map<DeleteUserResponse>(result)),
+                errors => Problem(errors)
+            );
+        }
+
+        [HttpPost("UpdateOrganization")]
+        public async Task<IActionResult> UpdateOrganization([FromBody] UpdateOrganizationRequest request)
+        {
+            var command = _mapper.Map<UpdateOrganizationCommand>(request);
+
+            ErrorOr<UpdateOrganizationResult> result = await _mediator.Send(command);
+
+            var test = result.Value;
+
+            return result.Match(
+                result => Ok(_mapper.Map<UpdateOrganizationResponse>(result)),
                 errors => Problem(errors)
             );
         }

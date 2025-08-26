@@ -52,11 +52,11 @@ namespace ClockiGo.Infrastructure.Presistance.Repositories
 
         public async Task<bool> UpdateOrganizationAsync(Organization updatedOrganization)
         {
-            var existingEntity = await GetOrganizationByIdAsync(updatedOrganization.Id);
+            var existingEntity = await _clockiGoContext.Organizations.FirstOrDefaultAsync(o => o.Id == updatedOrganization.Id);
             if (existingEntity is null) return false;
 
             _mapper.Map(updatedOrganization, existingEntity);
-
+           
             await Save();
 
             return true;
