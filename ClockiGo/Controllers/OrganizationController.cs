@@ -1,6 +1,7 @@
 ﻿using ClockiGo.Application.CQRS.Commands.Organization.AddOrganizationCommand;
 using ClockiGo.Application.CQRS.Commands.Organization.AddUserCommand;
 using ClockiGo.Application.CQRS.Commands.Organization.DeleteOrganizationCommand;
+using ClockiGo.Application.CQRS.Commands.Organization.RemoveUserCommand;
 using ClockiGo.Application.CQRS.Commands.Organization.UpdateOrganizationCommand;
 using ClockiGo.Application.CQRS.Queries.Organization.GetOrganizationQuery;
 using ClockiGo.Application.CQRS.Queries.Organization.GetOrganizationsQuery;
@@ -80,6 +81,19 @@ namespace ClockiGo.Presentation.Controllers
             );
         }
 
+        [HttpDelete("{organizationId}/RemoveUser{userId}")]
+        public async Task<IActionResult> RemoveUserFromOrganization(Guid organizationId, Guid userId)
+        {
+            var command = new RemoveUserCommand(organizationId, userId);
+
+            ErrorOr<RemoveUserResult> result = await _mediator.Send(command);
+
+            return result.Match(
+                result => Ok(_mapper.Map<RemoveUserResponse>(result)),
+                errors => Problem(errors)
+            );
+        }
+
 
         [HttpDelete("{organizationId}")]
         public async Task<IActionResult> DeleteOrganization(Guid organizationId)
@@ -93,7 +107,7 @@ namespace ClockiGo.Presentation.Controllers
 
 
             return result.Match(
-                result => Ok(_mapper.Map<DeleteUserResponse>(result)),
+                result => Ok(_mapper.Map<DeleteOrganizationResponse>(result)),
                 errors => Problem(errors)
             );
         }

@@ -1,6 +1,6 @@
 ﻿namespace ClockiGo.Contracts.Organization
 {
-    public record DeleteUserResponse
+    public record RemoveUserResponse
         (
             bool Success
         );

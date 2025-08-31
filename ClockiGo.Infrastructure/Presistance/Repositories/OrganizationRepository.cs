@@ -117,5 +117,21 @@ namespace ClockiGo.Infrastructure.Presistance.Repositories
             return true;
         }
 
+        public async Task<bool> RemoveUser(Guid organizationId, Guid userId)
+        {
+            var organizationEntity = await _clockiGoContext.Organizations
+                  .Include(o => o.Users)
+                  .FirstOrDefaultAsync(o => o.Id == organizationId);
+
+            if (organizationEntity is null || organizationEntity.Users is null || !organizationEntity.Users.Any(u => u.Id == userId)) return false;
+
+            var userToRemove = organizationEntity.Users.FirstOrDefault(u => u.Id == userId);
+            if (userToRemove is null) return false;
+
+            organizationEntity.Users.Remove(userToRemove);
+            await Save(); 
+            
+            return true;
+        }
     }
 }

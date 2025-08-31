@@ -11,7 +11,7 @@ namespace ClockiGo.Application.Common.Interfaces.Persistance
         Task<bool> UpdateOrganizationAsync(Organization updatedOrganization);
         Task AddAsync(Organization organization);
         Task<bool> DeleteAsync(Guid organizationId);
-
         Task<bool> AddUser(Guid organizationId, Guid userId);
+        Task<bool> RemoveUser(Guid organizationId, Guid userId);
     }
 }
