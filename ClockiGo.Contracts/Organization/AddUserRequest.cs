@@ -2,7 +2,6 @@
 {
     public record AddUserRequest
         (
-            Guid OrganizationId,
             Guid UserId
         );
 }

@@ -6,6 +6,7 @@ namespace ClockiGo.Application.CQRS.Commands.Organization.DeleteOrganizationComm
 {
     public record DeleteOrganizationCommand
         (
-            Guid OrganizationId
+            Guid OrganizationId,
+            Guid UserId
         ) : IRequest<ErrorOr<DeleteOrganizationResult>>;
 }

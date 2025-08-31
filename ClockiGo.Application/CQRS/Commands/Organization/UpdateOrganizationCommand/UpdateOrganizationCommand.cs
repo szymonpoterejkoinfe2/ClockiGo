@@ -6,7 +6,8 @@ namespace ClockiGo.Application.CQRS.Commands.Organization.UpdateOrganizationComm
 {
     public record UpdateOrganizationCommand
         (
-            Guid? OrganizationId,
+            Guid UserId,
+            Guid OrganizationId,
             string Name,
             string Email,
             string Phone

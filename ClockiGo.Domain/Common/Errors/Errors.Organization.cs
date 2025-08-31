@@ -8,6 +8,7 @@ namespace ClockiGo.Domain.Common.Errors
         {
             public static Error DuplicateEmail => Error.Conflict(code: "Organization.DuplicateEmail", description: "Organization with given email already exists");
             public static Error OrganizationNotFound => Error.Conflict(code: "Organization.OrganizationNotFound", description: "Organization was not found! ");
+            public static Error OrganizationIdMismatch => Error.Conflict(code: "Organization.OrganizationIdMismatch", description: "The organization ID in the URL does not match the ID in the request body.");
         }
     }
 }

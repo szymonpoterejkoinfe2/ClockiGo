@@ -6,10 +6,12 @@ using ClockiGo.Application.CQRS.Queries.Organization.GetOrganizationQuery;
 using ClockiGo.Application.CQRS.Queries.Organization.GetOrganizationsQuery;
 using ClockiGo.Application.Services.Organization.Common;
 using ClockiGo.Contracts.Organization;
+using ClockiGo.Domain.Common.Errors;
 using ErrorOr;
 using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace ClockiGo.Presentation.Controllers
 {
@@ -18,6 +20,7 @@ namespace ClockiGo.Presentation.Controllers
     {
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
+
 
         public OrganizationController(IMediator mediator, IMapper mapper)
         {
@@ -64,10 +67,10 @@ namespace ClockiGo.Presentation.Controllers
                 );
         }
 
-        [HttpPost("AddUser")]
-        public async Task<IActionResult> AddUserToOrganization([FromBody] AddUserRequest request)
+        [HttpPost("{organizationId}/AddUser")]
+        public async Task<IActionResult> AddUserToOrganization(Guid organizationId, [FromBody] AddUserRequest request)
         {
-            var command = _mapper.Map<AddUserCommand>(request);
+            var command = new AddUserCommand(OrganizationId: organizationId, UserId: request.UserId);
 
             ErrorOr<AddUserResult> result = await _mediator.Send(command);
 
@@ -81,7 +84,10 @@ namespace ClockiGo.Presentation.Controllers
         [HttpDelete("{organizationId}")]
         public async Task<IActionResult> DeleteOrganization(Guid organizationId)
         {
-            var command = new DeleteOrganizationCommand(organizationId);
+            if (!Guid.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out Guid userId))
+                return BadRequest();
+
+            var command = new DeleteOrganizationCommand(organizationId,userId);
 
             ErrorOr<DeleteOrganizationResult> result = await _mediator.Send(command);
 
@@ -92,10 +98,22 @@ namespace ClockiGo.Presentation.Controllers
             );
         }
 
-        [HttpPost("UpdateOrganization")]
-        public async Task<IActionResult> UpdateOrganization([FromBody] UpdateOrganizationRequest request)
+        [HttpPut("{organizationId}")]
+        public async Task<IActionResult> UpdateOrganization(Guid organizationId,[FromBody] UpdateOrganizationRequest request)
         {
-            var command = _mapper.Map<UpdateOrganizationCommand>(request);
+            if (organizationId != request.OrganizationId)
+                return BadRequest(Errors.Organization.OrganizationIdMismatch);
+
+            if (!Guid.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out Guid userId))
+                return BadRequest(Errors.User.UserNotFound);
+
+
+            var command = new UpdateOrganizationCommand(UserId: userId,
+                OrganizationId: request.OrganizationId,
+                Name: request.Name,
+                Email: request.Email,
+                Phone: request.Phone);
+            
 
             ErrorOr<UpdateOrganizationResult> result = await _mediator.Send(command);
 
