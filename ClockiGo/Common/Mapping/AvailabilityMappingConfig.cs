@@ -1,4 +1,4 @@
-﻿using ClockiGo.Application.CQRS.Commands.Availability;
+﻿using ClockiGo.Application.CQRS.Commands.Availability.AddAvailabilityCommand;
 using ClockiGo.Application.Services.Availability.Common;
 using ClockiGo.Contracts.Availability;
 using ClockiGo.Domain.Entities;

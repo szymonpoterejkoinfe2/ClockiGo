@@ -5,7 +5,7 @@ using ErrorOr;
 using MapsterMapper;
 using MediatR;
 
-namespace ClockiGo.Application.CQRS.Commands.Availability
+namespace ClockiGo.Application.CQRS.Commands.Availability.AddAvailabilityCommand
 {
     public class AddAvailabilityCommandHandler : IRequestHandler<AddAvailabilityCommand, ErrorOr<AddAvailabilityResult>>
     {

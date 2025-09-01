@@ -2,7 +2,7 @@
 using ErrorOr;
 using MediatR;
 
-namespace ClockiGo.Application.CQRS.Commands.Availability
+namespace ClockiGo.Application.CQRS.Commands.Availability.AddAvailabilityCommand
 {
     public record AddAvailabilityCommand(
 

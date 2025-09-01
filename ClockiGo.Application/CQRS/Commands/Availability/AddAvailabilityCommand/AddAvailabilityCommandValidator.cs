@@ -1,7 +1,7 @@
 ﻿using ClockiGo.Domain.Enums;
 using FluentValidation;
 
-namespace ClockiGo.Application.CQRS.Commands.Availability
+namespace ClockiGo.Application.CQRS.Commands.Availability.AddAvailabilityCommand
 {
     public class AddAvailabilityCommandValidator : AbstractValidator<AddAvailabilityCommand>
     {

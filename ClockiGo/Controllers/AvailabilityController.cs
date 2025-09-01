@@ -1,4 +1,5 @@
-﻿using ClockiGo.Application.CQRS.Commands.Availability;
+﻿using ClockiGo.Application.CQRS.Commands.Availability.AddAvailabilityCommand;
+using ClockiGo.Application.CQRS.Commands.Availability.DeleteAvailabilityCommand;
 using ClockiGo.Contracts.Availability;
 using ClockiGo.Contracts.Organization;
 using MapsterMapper;
@@ -30,6 +31,14 @@ namespace ClockiGo.Presentation.Controllers
                 result => Ok(_mapper.Map<AddAvailabilityResponse>(result)),
                 errors => Problem(errors)
                 );
+        }
+
+        [HttpDelete("{availabilityId}")]
+        public async Task<IActionResult> DeleteAvailability(Guid availabilityId)
+        {
+            var command = new DeleteAvailabilityCommand(availabilityId);
+
+            return Ok();
         }
     }
 }
