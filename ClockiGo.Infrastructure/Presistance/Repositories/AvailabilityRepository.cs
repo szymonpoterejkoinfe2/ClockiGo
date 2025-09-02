@@ -27,13 +27,12 @@ namespace ClockiGo.Infrastructure.Presistance.Repositories
 
         public async Task<bool> DeleteAsync(Guid AvailabilityId)
         {
-            var availabilityToDelete = GetAvailabilityByIdAsync(AvailabilityId);
+            var availabilityToDelete = await _context.Availabilities.FirstOrDefaultAsync(a => a.Id == AvailabilityId);
 
             if (availabilityToDelete is null)
                 return false;
 
-            var entity = _mapper.Map<AvailabilityEntity>(availabilityToDelete);
-            _context.Availabilities.Remove(entity);
+            _context.Availabilities.Remove(availabilityToDelete);
 
             var succes = await _context.SaveChangesAsync();
 

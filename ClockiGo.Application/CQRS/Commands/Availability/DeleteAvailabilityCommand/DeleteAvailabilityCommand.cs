@@ -6,6 +6,7 @@ namespace ClockiGo.Application.CQRS.Commands.Availability.DeleteAvailabilityComm
 {
     public record DeleteAvailabilityCommand
         (
-            Guid AvailabilityId
+            Guid AvailabilityId,
+            Guid UserId
         ) : IRequest<ErrorOr<DeleteAvailabilityResult>>;
 }

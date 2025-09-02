@@ -5,6 +5,7 @@ using ClockiGo.Contracts.Organization;
 using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace ClockiGo.Presentation.Controllers
 {
@@ -19,6 +20,19 @@ namespace ClockiGo.Presentation.Controllers
             _mapper = mapper;
             _mediator = mediator;
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllAvailabilities()
+        {
+            return Ok();
+        }
+
+        [HttpGet("{userId}")]
+        public async Task<IActionResult> GetAllAvailabilitiesOfUser(Guid userId)
+        {
+            return Ok(0);
+        }
+
 
         [HttpPost("add")]
         public async Task<IActionResult> AddAvailability([FromBody] AddAvailabilityRequest request)
@@ -36,9 +50,16 @@ namespace ClockiGo.Presentation.Controllers
         [HttpDelete("{availabilityId}")]
         public async Task<IActionResult> DeleteAvailability(Guid availabilityId)
         {
-            var command = new DeleteAvailabilityCommand(availabilityId);
+            if (!Guid.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out Guid userId))
+                return BadRequest();
 
-            return Ok();
+            var command = new DeleteAvailabilityCommand(availabilityId,userId);
+            var result = await _mediator.Send(command);
+
+            return result.Match(
+               result => Ok(_mapper.Map<DeleteAvailabilityResponse>(result)),
+               errors => Problem(errors)
+               );
         }
     }
 }

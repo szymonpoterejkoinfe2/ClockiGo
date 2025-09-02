@@ -20,8 +20,13 @@ namespace ClockiGo.Application.CQRS.Commands.Availability.DeleteAvailabilityComm
             var availabilityId = request.AvailabilityId;
 
             var availability = await _availabilityRepository.GetAvailabilityByIdAsync(availabilityId);
+            if (availability is null) return Errors.Availability.AvailabilityNotFound;
+            if (availability.UserId != request.UserId) return Errors.User.AccessDenied;
 
-            
+            var result = await _availabilityRepository.DeleteAsync(availabilityId);
+
+            return new DeleteAvailabilityResult(result);
+
         }
     }
 }
