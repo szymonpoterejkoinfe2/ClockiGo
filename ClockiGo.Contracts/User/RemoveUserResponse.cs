@@ -1,4 +1,4 @@
-﻿namespace ClockiGo.Contracts.Organization
+﻿namespace ClockiGo.Contracts.User
 {
     public record RemoveUserResponse
         (

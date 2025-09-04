@@ -7,6 +7,7 @@ using ClockiGo.Application.CQRS.Queries.Organization.GetOrganizationQuery;
 using ClockiGo.Application.CQRS.Queries.Organization.GetOrganizationsQuery;
 using ClockiGo.Application.Services.Organization.Common;
 using ClockiGo.Contracts.Organization;
+using ClockiGo.Contracts.User;
 using ClockiGo.Domain.Common.Errors;
 using ErrorOr;
 using MapsterMapper;

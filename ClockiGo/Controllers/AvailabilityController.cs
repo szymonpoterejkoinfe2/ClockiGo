@@ -1,7 +1,8 @@
 ﻿using ClockiGo.Application.CQRS.Commands.Availability.AddAvailabilityCommand;
 using ClockiGo.Application.CQRS.Commands.Availability.DeleteAvailabilityCommand;
+using ClockiGo.Application.CQRS.Queries.Availability.GetAllAvailabilitiesOfUserQuery;
+using ClockiGo.Application.CQRS.Queries.Availability.GetAllAvailabilitiesQuery;
 using ClockiGo.Contracts.Availability;
-using ClockiGo.Contracts.Organization;
 using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -24,13 +25,39 @@ namespace ClockiGo.Presentation.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllAvailabilities()
         {
-            return Ok();
+            if (!Guid.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out Guid userId))
+                return BadRequest();
+
+            var query = new GetAllAvailabilitiesQuery(userId);
+            var result = await _mediator.Send(query);
+
+            return result.Match(
+                result => Ok(_mapper.Map<GetAllAvailabilitiesResponse>(result)),
+                errors => Problem(errors)
+                );
+
         }
 
         [HttpGet("{userId}")]
         public async Task<IActionResult> GetAllAvailabilitiesOfUser(Guid userId)
         {
-            return Ok(0);
+            if (!Guid.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out Guid senderId))
+                return BadRequest();
+
+            var query = new GetAllAvailabilitiesOfUserQuery(userId, senderId);
+            var result = await _mediator.Send(query);
+
+            return result.Match(
+                result => Ok(_mapper.Map<GetAllAvailabilitiesOfUserResponse>(result)),
+                errors => Problem(errors)
+                );
+        }
+
+        [HttpGet("{userId}/inTime")]
+        public async Task<IActionResult> GetAllAvailabilitiesOfUserInMonthOfYear(Guid userId,[FromQuery] DateTime monthYear)
+        {
+
+            return Ok();
         }
 
 

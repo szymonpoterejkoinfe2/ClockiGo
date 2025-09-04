@@ -9,7 +9,6 @@ namespace ClockiGo.Domain.Entities
         public DateTime AvailableFrom { get; set; }
         public DateTime AvailableTo { get; set; }
 
-
         public Guid? UserId { get; set; } = Guid.Empty;
         public Guid? OrganizationId {  get; set; } = Guid.Empty;
 
