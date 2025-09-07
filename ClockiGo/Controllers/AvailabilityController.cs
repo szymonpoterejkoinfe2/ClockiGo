@@ -1,5 +1,6 @@
 ﻿using ClockiGo.Application.CQRS.Commands.Availability.AddAvailabilityCommand;
 using ClockiGo.Application.CQRS.Commands.Availability.DeleteAvailabilityCommand;
+using ClockiGo.Application.CQRS.Queries.Availability.GetAllAvailabilitiesOfUserInMonthOfYearQuery;
 using ClockiGo.Application.CQRS.Queries.Availability.GetAllAvailabilitiesOfUserQuery;
 using ClockiGo.Application.CQRS.Queries.Availability.GetAllAvailabilitiesQuery;
 using ClockiGo.Contracts.Availability;
@@ -53,13 +54,33 @@ namespace ClockiGo.Presentation.Controllers
                 );
         }
 
-        [HttpGet("{userId}/inTime")]
+        [HttpGet("{userId}/inMonth")]
         public async Task<IActionResult> GetAllAvailabilitiesOfUserInMonthOfYear(Guid userId,[FromQuery] DateTime monthYear)
         {
+            if (!Guid.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out Guid senderId))
+                return BadRequest();
 
+            var query = new GetAllAvailabilitiesOfUserInMonthOfYearQuery(userId, senderId, DateOnly.FromDateTime(monthYear.Date));
+            var result = await _mediator.Send(query);
+
+            return result.Match(
+                result => Ok(new GetAllAvailabilitiesOfUserInMonthOfYearResponse(monthYear, result.Availabilities)),
+                errors => Problem(errors)
+                );
+
+        }
+
+        [HttpGet("organization/{organizationId}")]
+        public async Task<IActionResult> GetAllAvailabilitiesOfOrganization(Guid organizationId)
+        {
             return Ok();
         }
 
+        [HttpGet("organization/{organizationId}/inMonth")]
+        public async Task<IActionResult> GetAllAvailabilitiesOfOrganizationInMonthOfYear(Guid organizationId, [FromQuery] DateTime monthYear)
+        {
+            return Ok();
+        }
 
         [HttpPost("add")]
         public async Task<IActionResult> AddAvailability([FromBody] AddAvailabilityRequest request)

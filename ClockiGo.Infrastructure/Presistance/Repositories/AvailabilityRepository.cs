@@ -61,6 +61,21 @@ namespace ClockiGo.Infrastructure.Presistance.Repositories
             return availabilities;
         }
 
+        public async Task<IReadOnlyList<Availability>> GetAvailabilitiesOfUserInMonthOfYearAsync(Guid userId, DateOnly monthOfYear)
+        {
+            var startOfMonth = new DateTime(monthOfYear.Year, monthOfYear.Month, 1, 0, 0, 0, DateTimeKind.Utc);
+            var endOfMonth = startOfMonth.AddMonths(1).AddDays(-1);
+            endOfMonth = DateTime.SpecifyKind(endOfMonth, DateTimeKind.Utc);
+
+            var availabilityEntities = await _context.Availabilities
+                .Where(a => a.UserId == userId &&
+                           (a.AvailableFrom <= endOfMonth && a.AvailableTo >= startOfMonth))
+                .ToListAsync();
+
+            var availabilities = _mapper.Map<IReadOnlyList<Availability>>(availabilityEntities);
+            return availabilities;
+        }
+
         public async Task<Availability?> GetAvailabilityByIdAsync(Guid id)
         {
             var entity = await _context.Availabilities.FirstOrDefaultAsync(a => a.Id == id);
