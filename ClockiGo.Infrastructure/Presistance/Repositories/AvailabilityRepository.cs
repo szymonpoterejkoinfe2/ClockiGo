@@ -4,6 +4,7 @@ using ClockiGo.Infrastructure.Presistance.Entities;
 using MapsterMapper;
 using Microsoft.EntityFrameworkCore;
 
+
 namespace ClockiGo.Infrastructure.Presistance.Repositories
 {
     public class AvailabilityRepository : IAvailabilityRepository
@@ -49,6 +50,30 @@ namespace ClockiGo.Infrastructure.Presistance.Repositories
 
             var availabilities = _mapper.Map<IReadOnlyList<Availability>>(availabilityEntities);
 
+            return availabilities;
+        }
+
+        public async Task<IReadOnlyList<Availability>> GetAvailabilitiesOfOrganizationAsync(Guid organizationId)
+        {
+            var availabilityEntities = await _context.Availabilities.Where(a => a.OrganizationId == organizationId).ToListAsync();
+
+            var availabilities = _mapper.Map<IReadOnlyList<Availability>>(availabilityEntities);
+
+            return availabilities;
+        }
+
+        public async Task<IReadOnlyList<Availability>> GetAvailabilitiesOfOrganizationInMonthOfYearAsync(Guid organizationId, DateOnly monthOfYear)
+        {
+            var startOfMonth = new DateTime(monthOfYear.Year, monthOfYear.Month, 1, 0, 0, 0, DateTimeKind.Utc);
+            var endOfMonth = startOfMonth.AddMonths(1).AddDays(-1);
+            endOfMonth = DateTime.SpecifyKind(endOfMonth, DateTimeKind.Utc);
+
+            var availabilityEntities = await _context.Availabilities
+                .Where(a => a.OrganizationId == organizationId &&
+                           (a.AvailableFrom <= endOfMonth && a.AvailableTo >= startOfMonth))
+                .ToListAsync();
+
+            var availabilities = _mapper.Map<IReadOnlyList<Availability>>(availabilityEntities);
             return availabilities;
         }
 

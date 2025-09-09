@@ -1,9 +1,12 @@
 ﻿using ClockiGo.Application.CQRS.Commands.Availability.AddAvailabilityCommand;
 using ClockiGo.Application.CQRS.Commands.Availability.DeleteAvailabilityCommand;
+using ClockiGo.Application.CQRS.Queries.Availability.GetAllAvailabilitiesOfOrganizationInMonthOfYearQuery;
+using ClockiGo.Application.CQRS.Queries.Availability.GetAllAvailabilitiesOfOrganizationQuery;
 using ClockiGo.Application.CQRS.Queries.Availability.GetAllAvailabilitiesOfUserInMonthOfYearQuery;
 using ClockiGo.Application.CQRS.Queries.Availability.GetAllAvailabilitiesOfUserQuery;
 using ClockiGo.Application.CQRS.Queries.Availability.GetAllAvailabilitiesQuery;
 using ClockiGo.Contracts.Availability;
+using ClockiGo.Domain.DTOs;
 using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -73,13 +76,45 @@ namespace ClockiGo.Presentation.Controllers
         [HttpGet("organization/{organizationId}")]
         public async Task<IActionResult> GetAllAvailabilitiesOfOrganization(Guid organizationId)
         {
-            return Ok();
+            if (!Guid.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out Guid senderId))
+                return BadRequest();
+
+            var query = new GetAllAvailabilitiesOfOrganizationQuery
+                (
+                    SenderId: senderId,
+                    OrganizationId: organizationId
+                );
+
+            var result = await _mediator.Send(query);
+
+            return result.Match(
+                result => Ok(_mapper.Map<GetAllAvailabilitiesOfOrganizationResponse>(result)),
+                errors => Problem(errors)
+                );
         }
 
         [HttpGet("organization/{organizationId}/inMonth")]
         public async Task<IActionResult> GetAllAvailabilitiesOfOrganizationInMonthOfYear(Guid organizationId, [FromQuery] DateTime monthYear)
         {
-            return Ok();
+            if (!Guid.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out Guid senderId))
+                return BadRequest();
+
+            var query = new GetAllAvailabilitiesOfOrganizationInMonthOfYearQuery
+                (
+                    SenderId: senderId,
+                    OrganizationId: organizationId,
+                    MonthOfYear: monthYear
+                );
+
+            var result = await _mediator.Send(query);
+
+            return result.Match(
+                result => Ok(new GetAllAvailabilitiesOfOrganizationInMonthOfYearResponse(
+                    Availabilities: _mapper.Map<IReadOnlyList<AvailabilityDTO>>(result.Availabilities),
+                    MonthOfYear: monthYear
+                    )),
+                errors => Problem(errors)
+                );
         }
 
         [HttpPost("add")]
