@@ -1,5 +1,6 @@
 ﻿using ClockiGo.Application.CQRS.Commands.Availability.AddAvailabilityCommand;
 using ClockiGo.Application.CQRS.Commands.Availability.DeleteAvailabilityCommand;
+using ClockiGo.Application.CQRS.Commands.Availability.UpdateAvailabilityCommand;
 using ClockiGo.Application.CQRS.Queries.Availability.GetAllAvailabilitiesOfOrganizationInMonthOfYearQuery;
 using ClockiGo.Application.CQRS.Queries.Availability.GetAllAvailabilitiesOfOrganizationQuery;
 using ClockiGo.Application.CQRS.Queries.Availability.GetAllAvailabilitiesOfUserInMonthOfYearQuery;
@@ -113,6 +114,32 @@ namespace ClockiGo.Presentation.Controllers
                     Availabilities: _mapper.Map<IReadOnlyList<AvailabilityDTO>>(result.Availabilities),
                     MonthOfYear: monthYear
                     )),
+                errors => Problem(errors)
+                );
+        }
+
+        [HttpPut("/{availabilityId}")]
+        public async Task<IActionResult> UpdateAvailability(Guid availabilityId, [FromBody] UpdateAvailabilityRequest request)
+        {
+            if (availabilityId == request.Id) 
+                return BadRequest();
+
+            if (!Guid.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out Guid senderId))
+                return BadRequest();
+
+            var command = new UpdateAvailabilityCommand
+                (
+                    SenderId: senderId,
+                    Id: request.Id,
+                    AvailabilityType: request.AvailabilityType,
+                    AvailableFrom: request.AvailableFrom,
+                    AvailableTo: request.AvailableTo
+                );
+
+            var result = await _mediator.Send(command);
+
+            return result.Match(
+                result => Ok(_mapper.Map<UpdateAvailabilityResponse>(result)),
                 errors => Problem(errors)
                 );
         }
