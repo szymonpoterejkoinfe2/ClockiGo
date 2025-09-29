@@ -23,7 +23,6 @@ namespace ClockiGo.Presentation.Controllers
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
 
-
         public OrganizationController(IMediator mediator, IMapper mapper)
         {
             _mediator = mediator;

@@ -8,5 +8,6 @@ namespace ClockiGo.Application.Common.Interfaces.Persistance
         Task<User?> GetUserByEmailAsync(string email);
         Task AddAsync(User user);
         Task<bool> UpdateUserAsync(Domain.Entities.User updatedUser);
+        Task<bool> DeleteUserAsync(Guid userID);
     }
 }

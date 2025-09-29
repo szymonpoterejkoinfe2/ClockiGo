@@ -66,6 +66,19 @@ namespace ClockiGo.Infrastructure.Presistance.Repositories
             return true;
         }
 
+        public async Task<bool> DeleteUserAsync(Guid userId)
+        {
+            var userEntity = await _clockiGoContext.Users.FirstOrDefaultAsync(o => o.Id == userId);
+
+            if (userEntity is null)
+                return false;
+
+            _clockiGoContext.Users.Remove(userEntity);
+            await Save();
+
+            return true;
+        }
+
 
         private async Task Save()
         {
